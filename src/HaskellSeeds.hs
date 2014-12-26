@@ -6,6 +6,18 @@ import System.Environment
 
 -- | 'main' runs the main program
 main :: IO ()
-main = getArgs >>= print . doSome . head
+main = getArgs >>= runTask
 
-doSome = ("Boom! " ++)
+runTask :: [String] -> IO ()
+runTask ("help":args)   = print helpMessage
+runTask ("--help":args) = print helpMessage
+runTask ("-h":args)     = print helpMessage
+runTask ("build":args)  = do
+                                result <- buildSeed args
+                                print result
+runTask ("push":args)   = do
+                                result <- pushSeedWithDocs args
+                                print result
+runTask _               = print "Command is not supported"
+
+
