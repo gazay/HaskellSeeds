@@ -3,7 +3,13 @@ HaskellSeeds
 
 Small program which will help you to build and publish your library to hackage easy way
 
-## Usage:
+## Install
+
+```bash
+cabal install seed
+```
+
+## Configuration
 
 Before build and upload your library to hackage you can initialize configutation file
 for HaskellSeeds.
@@ -17,6 +23,8 @@ $>
 Enter location for configuration file (Press enter for ~/.HaskellSeeds):
 $>
 ```
+
+## Usage:
 
 ```bash
 $> seed build yourLib.cabal
