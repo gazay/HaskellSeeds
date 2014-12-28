@@ -2,6 +2,7 @@
 -- Copyright (c) 2014 gazay
 -- MIT License
 --
+import Prelude
 import System.Environment
 import System.Process
 
@@ -28,8 +29,7 @@ runTask ("help":args)   = putStrLn helpMessage
 runTask ("--help":args) = putStrLn helpMessage
 runTask ("-h":args)     = putStrLn helpMessage
 runTask ("build":args)  = do
-                                result <- buildSeed args
-                                putStrLn result
+                                buildSeed args >>= putStrLn
 runTask ("push":args)   = do
                                 result <- pushSeedWithDocs args
                                 putStrLn result
@@ -43,22 +43,29 @@ haddockArgs libName = [ "haddock"
                       ]
 
 buildSeed :: [String] -> IO String
-buildSeed = do
-    putStrLn "Looking for cabal file..."
-    cabalFile <- readProcess "ls" ["*.cabal"] ""
-    putStrLn cabalFile
-    putStrLn "Found " ++ cabalFile
-    putStrLn "Creating Sandbox..."
-    result1 <- readProcess "cabal" ["sandbox", "init"] ""
-    putStrLn result1
-    putStrLn "Sandbox created"
-    putStrLn "Installing seed into sandbox..."
-    result2 <- readProcess "cabal" ["install", "-j"] ""
-    putStrLn result2
-    putStrLn "Installation completed"
-    putStrLn "Generating docs for seed..."
-    result3 <- readProcess "cabal" haddockArgs(cabalFile) ""
-    return result3
+buildSeed args =
+    let name = args !! 0
+    in
+      do
+        putStrLn "Looking for cabal file..."
+        cabalFile <- readProcess "ls" [name ++ ".cabal"] ""
+        putStrLn cabalFile
+        putStrLn $ "Found " ++ cabalFile
+        putStrLn "Creating Sandbox (just to be sure that it can be built)..."
+        result1 <- readProcess "cabal" ["sandbox", "init"] ""
+        putStrLn result1
+        putStrLn "Sandbox created"
+        putStrLn "Building dist..."
+        result2 <- readProcess "cabal" ["dist"] ""
+        putStrLn result2
+        putStrLn "Distributive was built"
+        putStrLn "Installing seed into sandbox..."
+        result3 <- readProcess "cabal" ["install", "-j"] ""
+        putStrLn result4
+        putStrLn "Installation completed"
+        putStrLn "Generating docs for seed..."
+        result4 <- readProcess "cabal" (haddockArgs name) ""
+        return result4
 
 
 pushSeedWithDocs :: [String] -> IO String
