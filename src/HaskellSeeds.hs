@@ -48,25 +48,32 @@ buildSeed args =
     in
       do
         putStrLn "Looking for cabal file..."
-        cabalFile <- readProcess "ls" [name ++ ".cabal"] ""
-        putStrLn cabalFile
-        putStrLn $ "Found " ++ cabalFile
+        readProcess "ls" [name ++ ".cabal"] "" >>= \fileName -> putStrLn $ "Found" ++ fileName
+        putStrLn "\n\nConfiguring seed..."
+        readProcess "cabal" ["configure"] "" >>= putStrLn
+        putStrLn "Seed was configured\n\n"
         putStrLn "Creating Sandbox (just to be sure that it can be built)..."
-        result1 <- readProcess "cabal" ["sandbox", "init"] ""
-        putStrLn result1
-        putStrLn "Sandbox created"
-        putStrLn "Building dist..."
-        result2 <- readProcess "cabal" ["dist"] ""
-        putStrLn result2
-        putStrLn "Distributive was built"
+        readProcess "cabal" ["sandbox", "init"] "" >>= putStrLn
+        putStrLn "Sandbox created\n\n"
         putStrLn "Installing seed into sandbox..."
-        result3 <- readProcess "cabal" ["install", "-j"] ""
-        putStrLn result4
-        putStrLn "Installation completed"
+        readProcess "cabal" ["install", "-j"] "" >>= putStrLn
+        putStrLn "Installation completed\n\n"
+        putStrLn "Building dist..."
+        readProcess "cabal" ["sdist"] "" >>= putStrLn
+        putStrLn "Distributive was built\n\n"
         putStrLn "Generating docs for seed..."
-        result4 <- readProcess "cabal" (haddockArgs name) ""
-        return result4
+        readProcess "cabal" (haddockArgs name) "" >>= putStrLn
+        return "Success"
 
 
 pushSeedWithDocs :: [String] -> IO String
-pushSeedWithDocs = undefined
+pushSeedWithDocs args = do
+    pushSeed args >>= printStrLn
+    pushDocs args >>= printStrLn
+
+pushSeed :: [String] -> IO String
+pushSeed args = undefined
+
+
+pushDocs :: [String] -> IO String
+pushDocs args = undefined
