@@ -49,20 +49,26 @@ buildSeed args =
       do
         putStrLn "Looking for cabal file..."
         readProcess "ls" [name ++ ".cabal"] "" >>= \fileName -> putStrLn $ "Found" ++ fileName
+
         putStrLn "\n\nConfiguring seed..."
         readProcess "cabal" ["configure"] "" >>= putStrLn
         putStrLn "Seed was configured\n\n"
+
         putStrLn "Creating Sandbox (just to be sure that it can be built)..."
         readProcess "cabal" ["sandbox", "init"] "" >>= putStrLn
         putStrLn "Sandbox created\n\n"
+
         putStrLn "Installing seed into sandbox..."
         readProcess "cabal" ["install", "-j"] "" >>= putStrLn
         putStrLn "Installation completed\n\n"
+
         putStrLn "Building dist..."
         readProcess "cabal" ["sdist"] "" >>= putStrLn
         putStrLn "Distributive was built\n\n"
+
         putStrLn "Generating docs for seed..."
         readProcess "cabal" (haddockArgs name) "" >>= putStrLn
+
         return "Success"
 
 
@@ -72,7 +78,8 @@ pushSeedWithDocs args = do
     pushDocs args >>= printStrLn
 
 pushSeed :: [String] -> IO String
-pushSeed args = undefined
+pushSeed args = do
+    readProcess "cabal" ["upload",
 
 
 pushDocs :: [String] -> IO String
