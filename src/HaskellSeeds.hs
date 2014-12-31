@@ -42,6 +42,9 @@ haddockArgs libName = [ "haddock"
                       , "--contents-location='http://hackage.haskell.org/package/" ++ libName ++ "'"
                       ]
 
+uploadArgs :: [String] -> [String]
+uploadArgs args = ["upload"
+
 buildSeed :: [String] -> IO String
 buildSeed args =
     let name = args !! 0
@@ -79,8 +82,7 @@ pushSeedWithDocs args = do
 
 pushSeed :: [String] -> IO String
 pushSeed args = do
-    readProcess "cabal" ["upload",
-
+    readProcess "cabal" (uploadArgs args) ""
 
 pushDocs :: [String] -> IO String
 pushDocs args = undefined
